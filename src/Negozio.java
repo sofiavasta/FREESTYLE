@@ -66,15 +66,17 @@ public class Negozio {
                         System.out.print("Inserisci Stagione:");
                         String stagione = user_scanner.next();
                         System.out.print("Inserisci Id_Capo:");
-                        String id_capo = user_scanner.next();
+                        int id_capo = user_scanner.nextInt();
+                        System.out.print("Inserisci Id_Quantità:");
+                        int id_quantita = user_scanner.nextInt();
                         System.out.print("Inserisci Colore:");
                         String colore = user_scanner.next();
                         System.out.print("Inserisci Taglia:");
                         String taglia = user_scanner.next();
                         System.out.print("Inserisci Prezzo:");
-                        int prezzo = user_scanner.nextInt();
-
-                        messaggio_da_inviare = "AGGIUNGI "+categoria+" "+tipo_abbigliamento+" "+modello+" "+stagione+" "+id_capo+" "+colore+" "+taglia+" "+prezzo;
+                        String prezzo = user_scanner.next();
+                        prezzo=prezzo.replace(',','.');
+                        messaggio_da_inviare = "AGGIUNGI "+categoria+" "+tipo_abbigliamento+" "+modello+" "+stagione+" "+id_capo+" "+id_quantita+" "+colore+" "+taglia+" "+Float.parseFloat(prezzo);
                         System.out.println("DEBUG: Invio "+messaggio_da_inviare);
                         pw.println(messaggio_da_inviare);
                         pw.flush();
@@ -90,7 +92,24 @@ public class Negozio {
                             System.out.println("ERRORE: valore sconosciuto->"+messaggio_ricevuto);
                         }
                         break;
-                    case 1: // remove
+                    case 1: // Rimozione
+                        System.out.print("Inserisci Id_Capo:");
+                        int id_capo_rimozione = user_scanner.nextInt();
+                        messaggio_da_inviare="RIMUOVI "+id_capo_rimozione;
+                        System.out.println("DEBUG: Invio "+ messaggio_da_inviare);
+                        pw.println(messaggio_da_inviare);
+                        pw.flush();
+
+                        messaggio_ricevuto = server_scanner.nextLine();
+                        if (messaggio_ricevuto.equals("RIMOZIONE_ACK")) {
+                            System.out.println("Vestito rimosso correttamente!");
+                        }
+                        else if (messaggio_ricevuto.equals("RIMOZIONE_ERRORE")) {
+                            System.out.println("ERRORE il Vestito non e' stato rimosso correttamente!!!");
+                        }
+                        else {
+                            System.out.println("ERRORE: valore sconosciuto->"+messaggio_ricevuto);
+                        }
                         break;
                     case 2: // Elenco Articoli Magazzino
                         messaggio_da_inviare = "VISUALIZZA_LISTA";
