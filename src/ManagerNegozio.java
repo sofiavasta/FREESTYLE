@@ -44,19 +44,31 @@ public class ManagerNegozio implements Runnable{
                 String modello = msg_scanner.next();
                 String stagione = msg_scanner.next();
                 int id_capo = msg_scanner.nextInt();
+                int id_quantita = msg_scanner.nextInt();
                 String colore = msg_scanner.next();
                 String taglia = msg_scanner.next();
-                int prezzo = msg_scanner.nextInt();
+                String prezzo = msg_scanner.next();
+                try {
 
-                Vestito v = new Vestito(categoria,tipo_abbigliamento,modello,stagione,id_capo,colore,taglia,prezzo);
-                //DA_VEDERE!
-                list.add(v);
-                System.out.println("Aggiunto "+v);
-                pw.println("AGGIUNTO_ACK");
-                pw.flush();
+                    Vestito v = new Vestito(categoria, tipo_abbigliamento, modello, stagione, id_capo, id_quantita, colore, taglia, Float.parseFloat(prezzo));
+                    //DA_VEDERE!
+                    list.add(v);
+                    System.out.println("Aggiunto " + v);
+                    pw.println("AGGIUNTO_ACK");
+                    pw.flush();
+                } catch (NumberFormatException e) {
+                    pw.println("AGGIUNTO_ERRORE");
+                    pw.flush();
+                    e.printStackTrace();
+                }
+
             }
             else if (cmd.equals("RIMUOVI")){
                 System.out.println("Eseguo il comando Rimuovi");
+                int id_capo_rimozione = msg_scanner.nextInt();
+                list.remove(id_capo_rimozione);
+                pw.println("RIMOZIONE_ACK");
+                pw.flush();
             }
             else if (cmd.equals("VISUALIZZA_LISTA")) {
                 pw.println("INIZIO");
