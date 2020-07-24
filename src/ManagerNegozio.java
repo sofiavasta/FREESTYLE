@@ -1,7 +1,4 @@
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -64,9 +61,10 @@ public class ManagerNegozio implements Runnable{
 
             }
             else if (cmd.equals("RIMUOVI")){
-                System.out.println("Eseguo il comando Rimuovi");
+                System.out.println("Eseguo il comando Rimuovi e calcolo la nuova quantita': ");
                 int id_capo_rimozione = msg_scanner.nextInt();
-                list.remove(id_capo_rimozione);
+                int id_quantita_rimozione = msg_scanner.nextInt();
+                list.remove(id_capo_rimozione,id_quantita_rimozione);
                 pw.println("RIMOZIONE_ACK");
                 pw.flush();
             }
@@ -85,19 +83,47 @@ public class ManagerNegozio implements Runnable{
                 pw.println("FINE");
                 pw.flush();
             }
+
+            else if (cmd.equals("RIFORNIRE")){
+                System.out.println("Eseguo la rifornitura: ");
+                int id_capo_rifornire = msg_scanner.nextInt();
+                int numero_capi = msg_scanner.nextInt();
+                list.restock(id_capo_rifornire,numero_capi);
+                pw.println("RIFORNIRE_ACK");
+                pw.flush();
+
+            }
+
             else if (cmd.equals("SALVA")) {
+
+                File f =new File("archivio_negozio.txt");
+                if (f.exists()) {
+                    f.delete();
+                }
                 try {
-                    var oos = new ObjectOutputStream(new FileOutputStream("x.ser"));
-                    oos.writeObject(list);
-                    oos.close();
+                    f.createNewFile();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                FileWriter fw= null;
+                try {
+                    fw = new FileWriter(f, true);
+                    ArrayList<Vestito> tmp;
+
+                    tmp = list.getListCopy();
+                    for (Vestito v: tmp) {
+                        fw.append(v.toString());
+                        fw.flush();
+                    }
+                    fw.close();
                     pw.println("SALVATAGGIO_ACK");
                     pw.flush();
                     System.out.println("Lista salvata correttamente");
 
                 } catch (IOException e) {
-                    pw.println("SALVATAGGIO_ERRORE");
-                    pw.flush();
-                    e.printStackTrace();
+                   pw.println("SALVATAGGIO_ERRORE");
+                   pw.flush();
+                   e.printStackTrace();
                 }
 
             }

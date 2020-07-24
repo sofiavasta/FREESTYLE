@@ -95,7 +95,9 @@ public class Negozio {
                     case 1: // Rimozione
                         System.out.print("Inserisci Id_Capo:");
                         int id_capo_rimozione = user_scanner.nextInt();
-                        messaggio_da_inviare="RIMUOVI "+id_capo_rimozione;
+                        System.out.print("Inserisci Id_Quantita:");
+                        int id_quantita_rimozione = user_scanner.nextInt();
+                        messaggio_da_inviare="RIMUOVI "+id_capo_rimozione+" "+id_quantita_rimozione;
                         System.out.println("DEBUG: Invio "+ messaggio_da_inviare);
                         pw.println(messaggio_da_inviare);
                         pw.flush();
@@ -136,6 +138,27 @@ public class Negozio {
                         }
                         break;
                     case 3: //Richiesta Fornitura
+                        System.out.print("Inserisci l'id_capo dell'articolo da rifornire");
+                        int id_capo_rifornire = user_scanner.nextInt();
+                        System.out.print("Inserisci il numero di capi che vuoi rifornire");
+                        int numero_capi = user_scanner.nextInt();
+                        System.out.println("Rifornire il capo con il seguente id: "+id_capo_rifornire+"ed il seguente numero: "+numero_capi);
+
+                        messaggio_da_inviare = "RIFORNIRE "+id_capo_rifornire+" "+numero_capi;
+                        System.out.println("DEBUG: Invio "+ messaggio_da_inviare);
+                        pw.println(messaggio_da_inviare);
+                        pw.flush();
+
+                        messaggio_ricevuto = server_scanner.nextLine();
+                        if (messaggio_ricevuto.equals("RIFORNIRE_ACK")) {
+                            System.out.println("L'articolo e' stato rifornito con successo!");
+                        }
+                        else if (messaggio_ricevuto.equals("RIFORNIRE_ERRORE")) {
+                            System.out.println("ERRORE l'articolo non e' stato rifornito correttamente!!!");
+                        }
+                        else {
+                            System.out.println("ERRORE: valore sconosciuto->"+messaggio_ricevuto);
+                        }
                         break;
                     case 4: // Salvataggio
                         pw.println("SALVA");

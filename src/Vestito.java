@@ -1,6 +1,6 @@
-import java.io.Serializable;
 
-public class Vestito implements Serializable {
+
+public class Vestito {
 
     private String categoria;
     private String tipo_abbigliamento;
