@@ -46,11 +46,8 @@ public class ManagerNegozio implements Runnable{
                 String taglia = msg_scanner.next();
                 String prezzo = msg_scanner.next();
                 try {
-
                     Vestito v = new Vestito(categoria, tipo_abbigliamento, modello, stagione, id_capo, id_quantita, colore, taglia, Float.parseFloat(prezzo));
-                    //DA_VEDERE!
                     list.add(v);
-                    System.out.println("Aggiunto " + v);
                     pw.println("AGGIUNTO_ACK");
                     pw.flush();
                 } catch (NumberFormatException e) {

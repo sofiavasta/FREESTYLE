@@ -83,7 +83,6 @@ public class Negozio {
 
                         messaggio_ricevuto = server_scanner.nextLine();
                         if (messaggio_ricevuto.equals("AGGIUNTO_ACK")) {
-                            System.out.println("Vestito aggiunto correttamente!");
                         }
                         else if (messaggio_ricevuto.equals("AGGIUNTO_ERRORE")) {
                             System.out.println("ERRORE il Vestito non e' stato aggiunto correttamente!!!");
@@ -138,9 +137,9 @@ public class Negozio {
                         }
                         break;
                     case 3: //Richiesta Fornitura
-                        System.out.print("Inserisci l'id_capo dell'articolo da rifornire");
+                        System.out.print("Inserisci l'id_capo dell'articolo da rifornire: ");
                         int id_capo_rifornire = user_scanner.nextInt();
-                        System.out.print("Inserisci il numero di capi che vuoi rifornire");
+                        System.out.print("Inserisci il numero di capi che vuoi rifornire: ");
                         int numero_capi = user_scanner.nextInt();
                         System.out.println("Rifornire il capo con il seguente id: "+id_capo_rifornire+"ed il seguente numero: "+numero_capi);
 

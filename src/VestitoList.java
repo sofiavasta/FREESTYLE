@@ -4,7 +4,6 @@ import java.util.Date;
 
 public class VestitoList {
 
-    String id_archivio;
     String ultima_modifica;
     private ArrayList<Vestito> list;
 
@@ -12,9 +11,28 @@ public class VestitoList {
         this.list = new ArrayList<Vestito>();
     }
 
-    public synchronized void add(Vestito v) {
-        ultima_modifica = new Date().toString();
-        list.add(v);
+    public synchronized void add(Vestito vestito) {
+        int presente=0;
+        if(list.isEmpty()){  //controlla se la lista è vuota
+            ultima_modifica = new Date().toString();
+            list.add(vestito);
+        }else{
+            for (Vestito e: list){   //se nella lista c'è almeno un elemento
+                System.out.println("VESTITI NELLA LISTA-->"+e.toString());
+                if(e.getId_capo()==vestito.getId_capo()){
+                   System.out.println("Errore, elemento già presente in lista: "+e.toString());
+                   presente=1;  //se è presente lo stesso id_capo
+                 }
+
+            }
+            if(presente==0){
+                ultima_modifica = new Date().toString();
+                list.add(vestito);
+                System.out.println("Elemento non presente in lista, aggiunto correttamente! "+vestito.toString());
+
+            }
+        }
+
     }
 
     public synchronized void remove(int id_capo_rimozione, int id_quantita_rimozione) {
