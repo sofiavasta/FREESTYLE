@@ -1,0 +1,2 @@
+Vestito{categoria='cicici', tipo_abbigliamento='cicici', modello='cici', stagione='ciic', id_capo=333, id_quantita=3333, colore='ididi', taglia='didi', prezzo=33.0}
+Vestito{categoria='djdjdj', tipo_abbigliamento='djdj', modello='djdj', stagione='djdj', id_capo=2222, id_quantita=1, colore='ddjdj', taglia='ddd', prezzo=222.0}
