@@ -1,4 +1,8 @@
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -53,7 +57,7 @@ public class VestitoList {
                 }
             }
         }
-        if(vestito_da_rimuovere.getId_quantita()<=1){     //quantità 1 e ne rimuovo 1
+        if(vestito_da_rimuovere.getId_quantita()<1){     //quantità 1 e ne rimuovo 1
             list.remove(vestito_da_rimuovere);
             System.out.println("RIMOSSO!"+vestito_da_rimuovere);
             System.out.println("Fine quantità di questo prodotto, con il seguente id_capo: "+id_capo_rimozione);
@@ -100,6 +104,33 @@ public class VestitoList {
         }
         d = d + "Fine_Lista";
         return d;
+    }
+
+    public synchronized void salvaSuFile() {
+        File f =new File("archivio_negozio.txt");
+        if (f.exists()) {
+            f.delete();
+        }
+
+        FileWriter fw= null;
+        try {
+            fw = new FileWriter("archivio_negozio.txt");
+            BufferedWriter bw = new BufferedWriter(fw);
+
+            for (Vestito v: list) {
+                System.out.println(v.toString());
+                bw.write(v.toString());
+                bw.newLine();
+            }
+            bw.flush();
+            bw.close();
+
+            System.out.println("Lista salvata correttamente");
+
+        } catch (IOException e) {
+            System.out.println("Salvataggio errore!");
+            e.printStackTrace();
+        }
     }
 }
 

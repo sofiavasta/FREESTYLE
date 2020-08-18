@@ -49,8 +49,7 @@ public class Negozio {
                 System.out.println("1 - Rimuovi Vestito");
                 System.out.println("2 - Elenco Articoli Magazzino");
                 System.out.println("3 - Richiesta Fornitura");
-                System.out.println("4 - Salva");
-                System.out.println("5 - Esci");
+                System.out.println("4 - Esci");
                 System.out.println("----------------FREESTYLE---------------");
                 System.out.print("Inserisci scelta->");
                 choice = user_scanner.nextInt();
@@ -159,22 +158,8 @@ public class Negozio {
                             System.out.println("ERRORE: valore sconosciuto->"+messaggio_ricevuto);
                         }
                         break;
-                    case 4: // Salvataggio
-                        pw.println("SALVA");
-                        pw.flush();
 
-                        messaggio_ricevuto = server_scanner.nextLine();
-                        if (messaggio_ricevuto.equals("SALVATAGGIO_ACK")) {
-                            System.out.println("File salvato correttamente!");
-                        }
-                        else if (messaggio_ricevuto.equals("SALVATAGGIO_ERRORE")) {
-                            System.out.println("ERRORE durante il salvataggio del File");
-                        }
-                        else {
-                            System.out.println("Messaggio sconosciuto: "+messaggio_ricevuto);
-                        }
-                        break;
-                    case 5: // Uscita
+                    case 4: // Uscita
                         go = false;
                         System.out.println("Chiusura del Client...");
                         messaggio_da_inviare = "ESCI";

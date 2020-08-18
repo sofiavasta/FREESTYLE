@@ -9,7 +9,7 @@ public class ManagerNegozio implements Runnable{
 
     public ManagerNegozio(Socket myclient, VestitoList list) {
         client_socket = myclient;
-        this.list = list;
+        this.list = new VestitoList();
     }
 
     @Override
@@ -19,15 +19,19 @@ public class ManagerNegozio implements Runnable{
 
         Scanner client_scanner = null;
         PrintWriter pw = null;
-        try {
-            client_scanner = new Scanner(client_socket.getInputStream());
-            pw = new PrintWriter(client_socket.getOutputStream());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
 
         boolean go = true;
         while (go) {
+            try {
+                ThreadAggiornamento ts = new ThreadAggiornamento(list);
+                Thread t = new Thread(ts);
+                t.start();
+                client_scanner = new Scanner(client_socket.getInputStream());
+                pw = new PrintWriter(client_socket.getOutputStream());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             String message = client_scanner.nextLine();
             System.out.println("Il Server ha ricevuto: "+message);
             Scanner msg_scanner = new Scanner(message);
@@ -91,39 +95,7 @@ public class ManagerNegozio implements Runnable{
 
             }
 
-            else if (cmd.equals("SALVA")) {
 
-                File f =new File("archivio_negozio.txt");
-                if (f.exists()) {
-                    f.delete();
-                }
-                try {
-                    f.createNewFile();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                FileWriter fw= null;
-                try {
-                    fw = new FileWriter(f, true);
-                    ArrayList<Vestito> tmp;
-
-                    tmp = list.getListCopy();
-                    for (Vestito v: tmp) {
-                        fw.append(v.toString());
-                        fw.flush();
-                    }
-                    fw.close();
-                    pw.println("SALVATAGGIO_ACK");
-                    pw.flush();
-                    System.out.println("Lista salvata correttamente");
-
-                } catch (IOException e) {
-                   pw.println("SALVATAGGIO_ERRORE");
-                   pw.flush();
-                   e.printStackTrace();
-                }
-
-            }
             else if (cmd.equals("ESCI")) {
                 System.out.println("Chiusura di connessione con "+client_socket.getRemoteSocketAddress());
                 try {
