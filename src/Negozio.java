@@ -80,8 +80,10 @@ public class Negozio {
                         pw.println(messaggio_da_inviare);
                         pw.flush();
 
+                        //DA SERVER A CLIENT
                         messaggio_ricevuto = server_scanner.nextLine();
                         if (messaggio_ricevuto.equals("AGGIUNTO_ACK")) {
+                            System.out.println("AGGIUNTO CON SUCCESSO");
                         }
                         else if (messaggio_ricevuto.equals("AGGIUNTO_ERRORE")) {
                             System.out.println("ERRORE il Vestito non e' stato aggiunto correttamente!!!");
