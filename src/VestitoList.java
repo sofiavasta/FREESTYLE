@@ -20,6 +20,7 @@ public class VestitoList {
         if(list.isEmpty()){  //controlla se la lista è vuota
             ultima_modifica = new Date().toString();
             list.add(vestito);
+
         }else{
             for (Vestito e: list){   //se nella lista c'è almeno un elemento
                 System.out.println("VESTITI NELLA LISTA-->"+e.toString());

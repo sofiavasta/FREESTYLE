@@ -9,7 +9,7 @@ public class ManagerNegozio implements Runnable{
 
     public ManagerNegozio(Socket myclient, VestitoList list) {
         client_socket = myclient;
-        this.list = new VestitoList();
+        this.list = list;
     }
 
     @Override
