@@ -1,1 +1,0 @@
-Vestito{categoria='Donna', tipo_abbigliamento='Vestito', modello='Lungo', stagione='Esate', id_capo=1, id_quantita=12, colore='Rosos', taglia='M', prezzo=90.0}

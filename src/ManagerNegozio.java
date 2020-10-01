@@ -39,61 +39,55 @@ public class ManagerNegozio implements Runnable{
             String cmd = msg_scanner.next();
             System.out.println("Comando ricevuto:"+cmd);
 
-            if (cmd.equals("AGGIUNGI")) {
-                String categoria = msg_scanner.next();
-                String tipo_abbigliamento = msg_scanner.next();
-                String modello = msg_scanner.next();
-                String stagione = msg_scanner.next();
-                int id_capo = msg_scanner.nextInt();
-                int id_quantita = msg_scanner.nextInt();
-                String colore = msg_scanner.next();
-                String taglia = msg_scanner.next();
-                String prezzo = msg_scanner.next();
-                try {
-                    Vestito v = new Vestito(categoria, tipo_abbigliamento, modello, stagione, id_capo, id_quantita, colore, taglia, Float.parseFloat(prezzo));
-                    list.add(v);
-                    pw.println("AGGIUNTO_ACK");
+             if (cmd.equals("ADD_CAPO")){
+                System.out.println("AGGIUNGO UN NUOVO CAPO ALLA GIACENZA DEL NEGOZIO");
+                int id_capo_rifornire = msg_scanner.nextInt();
+                String nome_client_add=msg_scanner.next();
+                Vestito v_restock=list.restock(id_capo_rifornire,nome_client_add);
+
+                if(v_restock!=null){
+                    System.out.println("HO AGGIUNTO IL SEGUENTE VESTITO-->"+v_restock);
+                    pw.println("ADD_CAPO_RICEZIONE_ACK");
                     pw.flush();
-                } catch (NumberFormatException e) {
-                    pw.println("AGGIUNTO_ERRORE");
+                }else{
+                    System.out.println("ERRORE! VESTITO NON PRESENTE");
+                    pw.println("ADD_CAPO_ERRORE");
                     pw.flush();
-                    e.printStackTrace();
+
                 }
 
-            }
-            else if (cmd.equals("RIMUOVI")){
-                System.out.println("Eseguo il comando Rimuovi e calcolo la nuova quantita': ");
-                int id_capo_rimozione = msg_scanner.nextInt();
-                int id_quantita_rimozione = msg_scanner.nextInt();
-                list.remove(id_capo_rimozione,id_quantita_rimozione);
-                pw.println("RIMOZIONE_ACK");
-                pw.flush();
+
             }
             else if (cmd.equals("VISUALIZZA_LISTA")) {
-                pw.println("INIZIO");
-                pw.flush();
+                String nome_client_visualizza=msg_scanner.next();
 
                 ArrayList<Vestito> tmp;
+                 try {
 
-                tmp = list.getListCopy();
-                for (Vestito v: tmp) {
-                    pw.println(v);
-                    pw.flush();
-                }
+                     tmp = list.getListCopy(nome_client_visualizza);
 
-                pw.println("FINE");
-                pw.flush();
+                     if(tmp.size()>0){
+                         pw.println("INIZIO");
+                         pw.flush();
+                         for (Vestito v: tmp) {
+                             pw.println(v);
+                             pw.flush();
+                         }
+                         pw.println("FINE");
+                         pw.flush();
+                     }else{
+                         pw.println("VISUALIZZA_LISTA_ERRORE");
+                         pw.flush();
+                     }
+
+                 } catch (IOException e) {
+                     e.printStackTrace();
+                 }
+
+
             }
 
-            else if (cmd.equals("RIFORNIRE")){
-                System.out.println("Eseguo la rifornitura: ");
-                int id_capo_rifornire = msg_scanner.nextInt();
-                int numero_capi = msg_scanner.nextInt();
-                list.restock(id_capo_rifornire,numero_capi);
-                pw.println("RIFORNIRE_ACK");
-                pw.flush();
 
-            }
 
 
             else if (cmd.equals("ESCI")) {

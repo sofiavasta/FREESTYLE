@@ -1,3 +1,5 @@
+import java.io.IOException;
+
 public class ThreadAggiornamento implements Runnable {
 
         VestitoList vl;
@@ -11,10 +13,11 @@ public class ThreadAggiornamento implements Runnable {
             try {
                 Thread.sleep(1000);
                 vl.salvaSuFile();
-            } catch (InterruptedException e) {
+
+            }  catch (InterruptedException | IOException e) {
                 System.out.println("STOP Thread!");
                 e.printStackTrace();
             }
 
-        }
+    }
 }

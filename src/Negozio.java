@@ -8,20 +8,22 @@ public class Negozio {
     Socket socket;
     private String indirizzo;
     private int porta;
+    private String nome;
 
-    public Negozio(String indirizzo, int porta) {
+    public Negozio(String indirizzo, int porta, String nome) {
         this.indirizzo = indirizzo;
         this.porta = porta;
+        this.nome=nome;
     }
 
     public static void main(String args[]) {
 
-        if (args.length!=2)  {
-            System.out.println("Usa: java Negozio <indirizzo> <porta>");
+        if (args.length!=3)  {
+            System.out.println("Usa: java Negozio <indirizzo> <porta> <nome_negozio>");
             return;
         }
 
-        Negozio client = new Negozio(args[0], Integer.parseInt(args[1]));
+        Negozio client = new Negozio(args[0], Integer.parseInt(args[1]),args[2]);
         client.start();
     }
 
@@ -45,76 +47,36 @@ public class Negozio {
             while (go) {
 
                 System.out.println("----------------FREESTYLE---------------");
-                System.out.println("0 - Aggiungi Vestito");
-                System.out.println("1 - Rimuovi Vestito");
-                System.out.println("2 - Elenco Articoli Magazzino");
-                System.out.println("3 - Richiesta Fornitura");
-                System.out.println("4 - Esci");
+                System.out.println("0 - RICHIESTA CAPO IN MAGAZZINO");
+                System.out.println("1 - ELENCO ARTICOLI IN NEGOZIO");
+                System.out.println("2 - ESCI");
                 System.out.println("----------------FREESTYLE---------------");
                 System.out.print("Inserisci scelta->");
                 choice = user_scanner.nextInt();
 
                 switch (choice) {
-                    case 0: //Aggiungi Vestito
-                        System.out.print("Inserisci Categoria:");
-                        String categoria = user_scanner.next();
-                        System.out.print("Inserisci Tipo_Abbigliamento:");
-                        String tipo_abbigliamento = user_scanner.next();
-                        System.out.print("Inserisci Modello:");
-                        String modello = user_scanner.next();
-                        System.out.print("Inserisci Stagione:");
-                        String stagione = user_scanner.next();
-                        System.out.print("Inserisci Id_Capo:");
-                        int id_capo = user_scanner.nextInt();
-                        System.out.print("Inserisci Id_Quantità:");
-                        int id_quantita = user_scanner.nextInt();
-                        System.out.print("Inserisci Colore:");
-                        String colore = user_scanner.next();
-                        System.out.print("Inserisci Taglia:");
-                        String taglia = user_scanner.next();
-                        System.out.print("Inserisci Prezzo:");
-                        String prezzo = user_scanner.next();
-                        prezzo=prezzo.replace(',','.');
-                        messaggio_da_inviare = "AGGIUNGI "+categoria+" "+tipo_abbigliamento+" "+modello+" "+stagione+" "+id_capo+" "+id_quantita+" "+colore+" "+taglia+" "+Float.parseFloat(prezzo);
-                        System.out.println("DEBUG: Invio "+messaggio_da_inviare);
-                        pw.println(messaggio_da_inviare);
-                        pw.flush();
 
-                        //DA SERVER A CLIENT
-                        messaggio_ricevuto = server_scanner.nextLine();
-                        if (messaggio_ricevuto.equals("AGGIUNTO_ACK")) {
-                            System.out.println("AGGIUNTO CON SUCCESSO");
-                        }
-                        else if (messaggio_ricevuto.equals("AGGIUNTO_ERRORE")) {
-                            System.out.println("ERRORE il Vestito non e' stato aggiunto correttamente!!!");
-                        }
-                        else {
-                            System.out.println("ERRORE: valore sconosciuto->"+messaggio_ricevuto);
-                        }
-                        break;
-                    case 1: // Rimozione
+                    case 0: // Richiesta capo in magazzino
                         System.out.print("Inserisci Id_Capo:");
-                        int id_capo_rimozione = user_scanner.nextInt();
-                        System.out.print("Inserisci Id_Quantita:");
-                        int id_quantita_rimozione = user_scanner.nextInt();
-                        messaggio_da_inviare="RIMUOVI "+id_capo_rimozione+" "+id_quantita_rimozione;
+                        int id_capo_da_inserire = user_scanner.nextInt();
+                        messaggio_da_inviare="ADD_CAPO "+id_capo_da_inserire+" "+this.nome;
                         System.out.println("DEBUG: Invio "+ messaggio_da_inviare);
                         pw.println(messaggio_da_inviare);
                         pw.flush();
-
                         messaggio_ricevuto = server_scanner.nextLine();
-                        if (messaggio_ricevuto.equals("RIMOZIONE_ACK")) {
-                            System.out.println("Vestito rimosso correttamente!");
+                        if (messaggio_ricevuto.equals("ADD_CAPO_RICEZIONE_ACK")) {
+                            System.out.println("CAPO AGGIUNTO CORRETTAMENTE ALLA GIACENZA!");
+
                         }
-                        else if (messaggio_ricevuto.equals("RIMOZIONE_ERRORE")) {
-                            System.out.println("ERRORE il Vestito non e' stato rimosso correttamente!!!");
+                        else if (messaggio_ricevuto.equals("ADD_CAPO_ERRORE")) {
+                            System.out.println("ERRORE: Non è stato possibile ricevere il capo dal magazzino");
                         }
                         else {
                             System.out.println("ERRORE: valore sconosciuto->"+messaggio_ricevuto);
                         }
                         break;
-                    case 2: // Elenco Articoli Magazzino
-                        messaggio_da_inviare = "VISUALIZZA_LISTA";
+                    case 1: // Elenco Articoli Magazzino
+                        messaggio_da_inviare = "VISUALIZZA_LISTA "+this.nome;
                         pw.println(messaggio_da_inviare);
                         pw.flush();
 
@@ -133,35 +95,16 @@ public class Negozio {
                                 }
                             }
                         }
-                        else {
-                            System.out.println("Risposta sconosciuta:"+messaggio_ricevuto);
+                        else if(messaggio_ricevuto.equals("VISUALIZZA_LISTA_ERRORE")) {
+                            System.out.println("NON HAI NESSUN ARTICOLO IN GIACENZA");
                         }
-                        break;
-                    case 3: //Richiesta Fornitura
-                        System.out.print("Inserisci l'id_capo dell'articolo da rifornire: ");
-                        int id_capo_rifornire = user_scanner.nextInt();
-                        System.out.print("Inserisci il numero di capi che vuoi rifornire: ");
-                        int numero_capi = user_scanner.nextInt();
-                        System.out.println("Rifornire il capo con il seguente id: "+id_capo_rifornire+"ed il seguente numero: "+numero_capi);
-
-                        messaggio_da_inviare = "RIFORNIRE "+id_capo_rifornire+" "+numero_capi;
-                        System.out.println("DEBUG: Invio "+ messaggio_da_inviare);
-                        pw.println(messaggio_da_inviare);
-                        pw.flush();
-
-                        messaggio_ricevuto = server_scanner.nextLine();
-                        if (messaggio_ricevuto.equals("RIFORNIRE_ACK")) {
-                            System.out.println("L'articolo e' stato rifornito con successo!");
-                        }
-                        else if (messaggio_ricevuto.equals("RIFORNIRE_ERRORE")) {
-                            System.out.println("ERRORE l'articolo non e' stato rifornito correttamente!!!");
-                        }
-                        else {
-                            System.out.println("ERRORE: valore sconosciuto->"+messaggio_ricevuto);
+                        else{
+                            System.out.println("Risposta inaspettata"+messaggio_ricevuto);
                         }
                         break;
 
-                    case 4: // Uscita
+
+                    case 2: // Uscita
                         go = false;
                         System.out.println("Chiusura del Client...");
                         messaggio_da_inviare = "ESCI";

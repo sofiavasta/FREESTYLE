@@ -1,10 +1,6 @@
-
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
-import java.util.Date;
+
 
 public class VestitoList {
 
@@ -15,76 +11,95 @@ public class VestitoList {
         this.list = new ArrayList<Vestito>();
     }
 
-    public synchronized void add(Vestito vestito) {
+
+    public synchronized Vestito restock(int id_capo_rifornire,String nome_client){
+        ArrayList<Vestito> negozio_list = new ArrayList<>();
+        Vestito vestito_da_inviare=null;
         int presente=0;
-        if(list.isEmpty()){  //controlla se la lista è vuota
-            ultima_modifica = new Date().toString();
-            list.add(vestito);
 
-        }else{
-            for (Vestito e: list){   //se nella lista c'è almeno un elemento
-                System.out.println("VESTITI NELLA LISTA-->"+e.toString());
-                if(e.getId_capo()==vestito.getId_capo()){
-                   System.out.println("Errore, elemento già presente in lista: "+e.toString());
-                   presente=1;  //se è presente lo stesso id_capo
-                 }
+        try {
+            String file_client = nome_client + ".ser";
+            System.out.println("NOME DEL FILE CLIENT-->" + file_client);
+            //APRO IL MAGAZZINO
+            FileInputStream fis = new FileInputStream("MAGAZZINO.ser");
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            list = (ArrayList<Vestito>) ois.readObject();
+            ois.close();
+            //VISUALIZZO LA LISTA MAGAZZINO
+            System.out.println("**************************************");
+            System.out.println(list.toString());
+            System.out.println("**************************************");
+            //APRO IL FILE DEL CLIENT
 
-            }
-            if(presente==0){
-                ultima_modifica = new Date().toString();
-                list.add(vestito);
-                System.out.println("Elemento non presente in lista, aggiunto correttamente! "+vestito.toString());
+            FileInputStream fis1 = new FileInputStream(file_client);
+            ObjectInputStream ois1 = new ObjectInputStream(fis1);
+            negozio_list = (ArrayList<Vestito>) ois1.readObject();
+            ois1.close();
 
-            }
+
+        } catch(FileNotFoundException ex){
+            System.out.println("ERRORE: LA TUA GIACENZA E' VUOTA!");
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
         }
 
-    }
-
-    public synchronized void remove(int id_capo_rimozione, int id_quantita_rimozione) {
-        ultima_modifica = new Date().toString();
-        Vestito vestito_da_rimuovere = null;
-        int nuova_quantita=0, id_quantita=0;
-        for( Vestito v: list){
-            if(v.getId_capo()==id_capo_rimozione) {
-                vestito_da_rimuovere = v;
-                System.out.println("TROVATO!" + vestito_da_rimuovere.toString());
-                id_quantita = vestito_da_rimuovere.getId_quantita(); //quantità prima della rimozione
-                if (id_quantita < id_quantita_rimozione) {
-                    System.out.println("ERRORE! Quantità da rimuovere superiore all'attuale giacenza!");
-                } else {
-                    nuova_quantita = id_quantita - id_quantita_rimozione;  //nuova quantità dopo la rimozione
-                    vestito_da_rimuovere.setId_quantita(nuova_quantita);   //aggiorna l'oggetto dopo il calcolo della nuova quantità
-                    System.out.println("Quantitativo aggiornato: "+vestito_da_rimuovere.toString());
-                }
-            }
-        }
-        if(vestito_da_rimuovere.getId_quantita()<1){     //quantità 1 e ne rimuovo 1
-            list.remove(vestito_da_rimuovere);
-            System.out.println("RIMOSSO!"+vestito_da_rimuovere);
-            System.out.println("Fine quantità di questo prodotto, con il seguente id_capo: "+id_capo_rimozione);
-        }
-
-    }
-
-    public synchronized void restock(int id_capo_rifornire, int numero_capi){
-        ultima_modifica = new Date().toString();
-        int id_quantita=0, nuova_quantita=0;
         for( Vestito v: list){
             if(v.getId_capo()==id_capo_rifornire) {
                 System.out.println("TROVATO!" + v.toString());
-                id_quantita = v.getId_quantita(); //quantità prima dell' aggiunta
-                nuova_quantita = id_quantita + numero_capi;  //nuova quantità dopo la rifornitura
-                v.setId_quantita(nuova_quantita);   //aggiorna l'oggetto dopo il calcolo della nuova quantità
-                System.out.println("Quantitativo aggiornato: "+v.toString());
+                presente=1;
+                vestito_da_inviare = v;
+
 
             }
         }
+
+        if(presente==1) {
+            list.remove(vestito_da_inviare); //RIMUOVO DAL MAGAZZINO
+            negozio_list.add(vestito_da_inviare); //AGGIUNGO NELLA LISTA GIACENZA DEL NEGOZIO CHE L'HA RICHIESTO
+            try {
+
+                //AGGIORNO LA GIACENZA DEL CLIENT
+                String file_client = nome_client + ".ser";
+                System.out.println("NOME DEL FILE CLIENT-->" + file_client);
+                FileOutputStream fos1 = new FileOutputStream(file_client);
+                ObjectOutputStream oos1 = new ObjectOutputStream(fos1);
+                oos1.writeObject(negozio_list);
+                System.out.println("HO INSERITO NEL FILE DEL CLIENT->" + negozio_list.toString());
+                oos1.close();
+
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
+        }
+
+
+        return vestito_da_inviare;
     }
 
-    public ArrayList<Vestito> getListCopy() {
-        ArrayList<Vestito> a_list = new ArrayList<>();
-        a_list.addAll(list);
-        return a_list;
+    public ArrayList<Vestito> getListCopy(String nome_negozio) throws IOException {
+        ArrayList<Vestito> negozio_list = new ArrayList<>();
+        String file_client = nome_negozio + ".ser";
+        //APRO IL FILE DEL NEGOZIO
+
+        try {
+
+            FileInputStream fis = new FileInputStream(file_client);
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            negozio_list = (ArrayList<Vestito>) ois.readObject();
+
+
+        } catch(FileNotFoundException ex) {
+            System.out.println("ERRORE: LA TUA GIACENZA E' VUOTA!");
+        }
+        catch (ClassNotFoundException e) {
+
+            e.printStackTrace();
+        }
+
+        return negozio_list;
     }
 
     @Override
@@ -107,31 +122,25 @@ public class VestitoList {
         return d;
     }
 
-    public synchronized void salvaSuFile() {
-        File f =new File("archivio_negozio.txt");
-        if (f.exists()) {
-            f.delete();
+    public synchronized void salvaSuFile() throws IOException {
+        if(list.isEmpty()){
+            System.out.println("[THREAD AGGIORNAMENTO]--->LOADING.......");
+        }else{
+            FileOutputStream fos = new FileOutputStream("MAGAZZINO.ser");
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            oos.writeObject(list);
+            oos.close();
+            System.out.println("[THREAD AGGIORNAMENTO]--->LISTA SALVATA CORRETTAMENTE!!!!!!!");
+            System.out.println("************************************************************");
+            System.out.println(list.toString());
+            System.out.println("************************************************************");
+
         }
 
-        FileWriter fw= null;
-        try {
-            fw = new FileWriter("archivio_negozio.txt");
-            BufferedWriter bw = new BufferedWriter(fw);
 
-            for (Vestito v: list) {
-                System.out.println(v.toString());
-                bw.write(v.toString());
-                bw.newLine();
-            }
-            bw.flush();
-            bw.close();
 
-            System.out.println("Lista salvata correttamente");
-
-        } catch (IOException e) {
-            System.out.println("Salvataggio errore!");
-            e.printStackTrace();
-        }
     }
+
+
 }
 
